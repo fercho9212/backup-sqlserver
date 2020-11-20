@@ -1,0 +1,54 @@
+version: '3'
+services:
+        jenkins:
+                container_name: jenkins
+                image: jenkins/jenkins
+                ports:
+                        - "8080:8080"
+                volumes:
+                        - $PWD/jenkins_home:/var/jenkins_home
+                networks:
+                        - net
+        centos:
+                container_name: remote_centos
+                image: remote_centos
+                build:
+                        context: centos
+                volumes:
+                        - $PWD/centos/bin/aws-s3.sh:/tmp/script.sh
+                ports: 
+                        - "2222:22"
+                networks:
+                        - net
+        db_host: 
+                container_name: db
+                image: mysql:5.7
+                environment:
+                        - "MYSQL_ROOT_PASSWORD=1234"
+                volumes:
+                        - $PWD/mysql/db_data:/var/lib/mysql
+                networks:
+                        - net
+        ubuntu:
+                container_name: remote_ubuntu
+                image: remote_ubuntu
+                build:
+                        context: ubuntu
+                networks:
+                        - net
+        sqlserver:
+                container_name: sqlserver2019
+                image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
+                user: '0:0'
+                environment:
+                       ACCEPT_EULA: Y
+                       SA_PASSWORD: FERfer123.
+                       MSSQL_PID: Express
+                ports:
+                        - 1400:1433
+                volumes:
+                        - $PWD/sqlserver/db_data:/var/opt/mssql
+                networks:
+                        - net
+networks:
+        net:
